@@ -8,11 +8,11 @@ import { LoginWithMobDto } from './dto/loginWithMob.dto';
 @Injectable()
 export class AuthService {
   async loginWithMobile(loginWithMobDto: LoginWithMobDto) {
-    const { mobileNo } = loginWithMobDto;
+    const { userMobileNo } = loginWithMobDto;
 
-    console.log('mobileNo: ', mobileNo);
+    console.log('mobileNo: ', userMobileNo);
 
-    if (!mobileNo) {
+    if (!userMobileNo) {
       throw new BadRequestException('Mobile no. is require');
     }
 
