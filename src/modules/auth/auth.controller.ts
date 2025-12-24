@@ -2,6 +2,8 @@ import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginWithMobDto } from './dto/loginWithMob.dto';
 import { OtpDto } from './dto/otp.dto';
+import { LoginWithEmailDto } from './dto/loginWithEmail.dto';
+import { LoginWithGoogleDto } from './dto/loginWithGoogle.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -15,14 +17,14 @@ export class AuthController {
 
   @Post('login/email')
   @HttpCode(200)
-  loginWithEmail() {
-    return this.authService.loginWithEmail();
+  loginWithEmail(@Body() loginWithEmailDto: LoginWithEmailDto) {
+    return this.authService.loginWithEmail(loginWithEmailDto);
   }
 
   @Post('login/google')
   @HttpCode(200)
-  loginWithGoogle() {
-    return this.authService.loginWithGoogle();
+  loginWithGoogle(@Body() loginWithGoogleDto: LoginWithGoogleDto) {
+    return this.authService.loginWithGoogle(loginWithGoogleDto);
   }
 
   @Post('otp/verify')

@@ -6,6 +6,10 @@ import {
 import { LoginWithMobDto } from './dto/loginWithMob.dto';
 import { OtpDto } from './dto/otp.dto';
 import { generateOTP } from 'src/common/utils/generateOTP';
+import { LoginWithEmailDto } from './dto/loginWithEmail.dto';
+import bcrypt from 'bcrypt';
+import { LoginWithGoogleDto } from './dto/loginWithGoogle.dto';
+import axios from 'axios';
 
 @Injectable()
 export class AuthService {
@@ -46,9 +50,52 @@ export class AuthService {
     }
   }
 
-  async loginWithEmail() {}
+  async loginWithEmail(loginWithEmailDto: LoginWithEmailDto) {
+    const { userEmail, userPass } = loginWithEmailDto;
 
-  async loginWithGoogle() {}
+    // find email registered or not
+
+    //Check password
+    const saltRounds = 10;
+    const hash = await bcrypt.hash(userPass, saltRounds);
+
+    const isMatching = await bcrypt.compare(userPass, hash);
+
+    if (isMatching) {
+      return { status: true, message: 'You have logged in successfully' };
+    } else {
+      return { status: false, message: 'Invalid credentials!' };
+    }
+  }
+
+  async loginWithGoogle(loginWithGoogleDto: LoginWithGoogleDto) {
+    const { authCode } = loginWithGoogleDto;
+
+    const payload = {
+      code: authCode,
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET,
+      redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+      grant_type: 'authorization_code',
+    };
+
+    try {
+      const googleAccessTokenRes = await axios.post(
+        'https://oauth2.googleapis.com/token',
+        payload,
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        },
+      );
+
+      console.log('googleAccessTokenRes: ', googleAccessTokenRes.data);
+      return googleAccessTokenRes.data;
+    } catch (error) {
+      console.log('error: ', error);
+    }
+  }
 
   async verifyOTP(otpDto: OtpDto) {
     const { userLoginOTP } = otpDto;
