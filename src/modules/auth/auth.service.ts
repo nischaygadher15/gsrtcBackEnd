@@ -79,6 +79,7 @@ export class AuthService {
       code: authCode,
       client_id: process.env.GOOGLE_CLIENT_ID!,
       client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+      redirect_uri: 'postmessage',
       grant_type: 'authorization_code',
     };
 
