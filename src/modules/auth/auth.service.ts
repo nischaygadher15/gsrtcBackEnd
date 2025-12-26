@@ -73,8 +73,8 @@ export class AuthService {
 
     if (
       !process.env.GOOGLE_CLIENT_ID ||
-      process.env.GOOGLE_CLIENT_SECRET ||
-      process.env.GOOGLE_REDIRECT_URI
+      !process.env.GOOGLE_CLIENT_SECRET ||
+      !process.env.GOOGLE_REDIRECT_URI
     ) {
       throw new InternalServerErrorException('Env file do not found!');
     }
@@ -83,11 +83,12 @@ export class AuthService {
       code: authCode,
       client_id: process.env.GOOGLE_CLIENT_ID!,
       client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-      redirect_uri: process.env.GOOGLE_REDIRECT_URI!,
+      redirect_uri: 'postmessage',
       grant_type: 'authorization_code',
     };
 
     try {
+      // Exchange Auth-code with Access_token
       const googleAccessTokenRes = await axios.post(
         'https://oauth2.googleapis.com/token',
         payload,
@@ -97,8 +98,22 @@ export class AuthService {
           },
         },
       );
-      console.log('googleAccessTokenRes: ', googleAccessTokenRes.data);
-      return googleAccessTokenRes.data;
+      // console.log('googleAccessTokenRes: ', googleAccessTokenRes.data);
+
+      // Get Userinfo from google
+      const UserInfoRes = await axios.get(
+        'https://www.googleapis.com/oauth2/v3/userinfo',
+        {
+          headers: {
+            Authorization: `Bearer ${googleAccessTokenRes.data.access_token}`,
+          },
+        },
+      );
+
+      return {
+        status: true,
+        message: 'You have logged in successfully',
+      };
     } catch (error) {
       console.log('error: ', error);
     }
