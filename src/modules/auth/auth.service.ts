@@ -75,7 +75,7 @@ export class AuthService {
       code: authCode,
       client_id: process.env.GOOGLE_CLIENT_ID,
       client_secret: process.env.GOOGLE_CLIENT_SECRET,
-      redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+      redirect_uri: 'https://gsrtc2025.vercel.app/api/auth/google/callback',
       grant_type: 'authorization_code',
     };
 
@@ -89,7 +89,6 @@ export class AuthService {
           },
         },
       );
-
       console.log('googleAccessTokenRes: ', googleAccessTokenRes.data);
       return googleAccessTokenRes.data;
     } catch (error) {
