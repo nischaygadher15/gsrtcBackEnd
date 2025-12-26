@@ -71,11 +71,19 @@ export class AuthService {
   async loginWithGoogle(loginWithGoogleDto: LoginWithGoogleDto) {
     const { authCode } = loginWithGoogleDto;
 
+    if (
+      !process.env.GOOGLE_CLIENT_ID ||
+      process.env.GOOGLE_CLIENT_SECRET ||
+      process.env.GOOGLE_REDIRECT_URI
+    ) {
+      throw new InternalServerErrorException('Env file do not found!');
+    }
+
     const payload = {
       code: authCode,
-      client_id: process.env.GOOGLE_CLIENT_ID,
-      client_secret: process.env.GOOGLE_CLIENT_SECRET,
-      redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+      client_id: process.env.GOOGLE_CLIENT_ID!,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+      redirect_uri: process.env.GOOGLE_REDIRECT_URI!,
       grant_type: 'authorization_code',
     };
 
